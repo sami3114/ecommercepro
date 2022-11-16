@@ -3,38 +3,39 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
-use App\Models\Reply;
+use App\Services\CommentService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
-    public function add_comment(Request $request){
-        if (Auth::id()){
-            $comment=new Comment();
-            $comment->name=Auth::user()->name;
-            $comment->comment=$request->comment;
-            $comment->user_id=Auth::user()->id;
-            $comment->save();
-            return redirect()->back();
-        }else
+    /**
+     * @param Request $request
+     * @param CommentService $commentService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|string
+     */
+    public function add_comment(Request $request,CommentService $commentService){
+        try {
+            return $commentService->comment($request);
+        }catch (\Exception $exception)
         {
-            return redirect('login');
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this comments section!';
         }
     }
-    public function add_reply(Request $request){
-        if (Auth::id()){
-            $reply=new Reply();
-            $reply->name=Auth::user()->name;
-            $reply->reply=$request->reply;
-            $reply->user_id=Auth::user()->id;
-            $reply->comment_id=$request->commentId;
-            $reply->save();
-            return redirect()->back();
-        }else
+
+    /**
+     * @param Request $request
+     * @param CommentService $commentService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|string
+     */
+    public function add_reply(Request $request,CommentService $commentService){
+        try {
+            return $commentService->reply($request);
+        }catch (\Exception $exception)
         {
-            return redirect('login');
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this reply section!';
         }
     }
 }

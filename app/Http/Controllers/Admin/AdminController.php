@@ -4,33 +4,43 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\User;
-//use http\Client\Curl\User;
+use App\Services\CommonService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use PDF;
-use Notification;
-use App\Notifications\SendEmailNotification;
-use RealRashid\SweetAlert\Facades\Alert;
+
+
 
 class AdminController extends Controller
 {
     /**
-     * @return void
+     * @param CommonService $commonService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
      */
-    public function order(){
-        return view('admin.order.index',['orders'=>Order::all()]);
+    public function order(CommonService $commonService){
+        try {
+            return $commonService->allOrders();
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this order section!';
+        }
     }
 
     /**
      * @param $id
-     * @return \Illuminate\Http\RedirectResponse
+     * @param CommonService $commonService
+     * @return \Illuminate\Http\RedirectResponse|string
      */
-    public function delivered($id){
-        $order=Order::find($id);
-        $order->delivery_status="delivered";
-        $order->save();
-        Alert::success('Order delivered');
-        return redirect()->back();
+    public function delivered($id,CommonService $commonService)
+    {
+        try {
+            return $commonService->delivered($id);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this delivered section!';
+        }
     }
 
     /**
@@ -45,23 +55,35 @@ class AdminController extends Controller
 //        return $pdf->download('oder_detail.pdf');
     }
 
-    public function send_email($id){
-        return view('admin.email.email',['order'=>Order::find($id)]);
+    /**
+     * @param $id
+     * @param CommonService $commonService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
+     */
+    public function send_email($id,CommonService $commonService){
+        try {
+            return $commonService->email($id);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this send email section!';
+        }
     }
 
-    public function send_email_user(Request $request, $id){
-        $order=Order::find($id);
-        $user=User::find($order->user_id);
-        $details=[
-            'greeting'=>$request->greeting,
-            'firstline'=>$request->firstline,
-            'body'=>$request->body,
-            'button'=>$request->button,
-            'url'=>$request->url,
-            'lastline'=>$request->lastline,
-        ];
-        Notification::sendNow($user,new SendEmailNotification($details));
-        Alert::success('Email has been sent successfully');
-        return redirect()->back();
+    /**
+     * @param Request $request
+     * @param $id
+     * @param CommonService $commonService
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function send_email_user(Request $request, $id,CommonService $commonService)
+    {
+        try {
+            return $commonService->sendEmail($request,$id);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this send email user section!';
+        }
     }
 }

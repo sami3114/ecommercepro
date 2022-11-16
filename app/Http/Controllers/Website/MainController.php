@@ -3,38 +3,54 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
-use App\Models\Product;
-use App\Models\Reply;
-use Illuminate\Http\Request;
+use App\Services\CommonService;
+use Illuminate\Support\Facades\Log;
 
 class MainController extends Controller
 {
+
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @param CommonService $commonService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
      */
-    public function product(){
-        return view('website.product.index',
-            ['products'=>Product::paginate(10)]);
+    public function product(CommonService $commonService)
+    {
+        try {
+            return $commonService->allProduct();
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this all product section!';
+        }
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @param CommonService $commonService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
      */
-    public function index(){
-        return view('website.welcome',
-            ['products'=>Product::paginate(10),
-            'comments'=>Comment::orderby('id','desc')->get(),
-            'replies'=>Reply::all()]);
+    public function index(CommonService $commonService){
+        try {
+            return $commonService->pcrview();
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with these product,comment and reply section!';
+        }
     }
 
     /**
      * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     * @param CommonService $commonService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
      */
-    public function detail($id)
+    public function detail($id,CommonService $commonService)
     {
-        return view('website.product.detail',
-            ['product'=>Product::find($id)]);
+        try {
+            return $commonService->detailProduct($id);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this detail product section!';
+        }
     }
 }

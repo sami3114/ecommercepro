@@ -28,5 +28,6 @@
 <!-- start script file -->
 @include('website.partials.script')
 <!-- end script file -->
+</div>
 </body>
 </html>

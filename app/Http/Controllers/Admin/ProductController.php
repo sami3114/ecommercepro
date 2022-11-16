@@ -4,65 +4,115 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
-use App\Http\Traits\UploadImage;
-use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
-use RealRashid\SweetAlert\Facades\Alert;
+use App\Services\ProductServices;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
-    use UploadImage;
-    public function index(){
-        return view('admin.product.index',['products'=>Product::all()]);
-    }
-    public function create(){
-        $categories=Category::all();
-        return view('admin.product.create',compact('categories'));
-    }
 
-    public function store(ProductRequest $request){
-        $product=$request->all();
-        $product['image']=$this->upload($request,'image','product');
-        Product::create($product);
-        Alert::success('Product has been added successfully');
-        return redirect()->route('list.product');
-    }
-
-    public function edit(Product $product){
-        return view('admin.product.update',['product'=>$product,'categories'=>Category::all()]);
-    }
-
-    public function update(ProductRequest $request, Product $product){
-        $data=$request->all();
-        if(!empty($data['image']))
+    /**
+     * @param ProductServices $productServices
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function index(ProductServices $productServices){
+        try {
+            return $productServices->getProducts();
+        }catch (\Exception $exception)
         {
-            $data['image']=$this->upload($request,'image','product');
-            $product->update($data);
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this all product!';
         }
-        else{
-            $product->update($data);
-        }
-        Alert::success('Product has been updated successfully');
-        return redirect()->route('list.product');
-//        return redirect()->route('list.product')->with('message','Product has been updated successfully');
+
     }
 
-    public function changeProductStatus(Request $request,$id,$status=1)
-    {
-        $product=Product::find($id);
-        if(!empty($product))
+    /**
+     * @param ProductServices $productServices
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
+     */
+    public function create(ProductServices $productServices){
+        try {
+            return $productServices->create();
+        }catch (\Exception $exception)
         {
-            $product->is_active=$status;
-            $product->save();
-            Alert::success('Product status has been updated successfully');
-            return redirect()->route('list.product');
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this create product!';
         }
     }
 
-    public function destory(Product $product)
+    /**
+     * @param ProductRequest $request
+     * @param ProductServices $productServices
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function store(ProductRequest $request,ProductServices $productServices){
+        try {
+            return $productServices->store($request);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this store product!';
+        }
+    }
+
+    /**
+     * @param Product $product
+     * @param ProductServices $productServices
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string
+     */
+    public function edit(Product $product,ProductServices $productServices){
+        try {
+            return $productServices->edit($product);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this edit product!';
+        }
+    }
+
+    /**
+     * @param ProductRequest $request
+     * @param Product $product
+     * @param ProductServices $productServices
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function update(ProductRequest $request, Product $product,ProductServices $productServices){
+        try {
+            return $productServices->updateProduct($request,$product);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this update product!';
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @param $status
+     * @param ProductServices $productServices
+     * @return \Illuminate\Http\RedirectResponse|string|void
+     */
+    public function changeProductStatus(Request $request,$id,$status=1,ProductServices $productServices)
     {
-        $product->delete();
-        return redirect()->back()->with('message','Product has been delete successfully');
+        try {
+            return $productServices->productstatus($request,$id,$status);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this update product!';
+        }
+    }
+
+    public function destory(Product $product,ProductServices $productServices)
+    {
+        try {
+            return $productServices->delete($product);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this delete product!';
+        }
     }
 }

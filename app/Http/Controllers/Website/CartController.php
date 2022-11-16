@@ -4,79 +4,57 @@ namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cart;
-use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
-    public function cart(Request $request,$id){
-        if (Auth::id()){
-            $user=Auth::user();
-            $userid=$user->id;
-            $product=Product::find($id);
-
-            $product_exist_id=Cart::where('product_id','=',$id)->where('user_id','=',$userid)->get('id')->first();
-            if ($product_exist_id)
-            {
-                $cart=Cart::find($product_exist_id)->first();
-                $stock=$cart->stock;
-                $cart->stock=$stock+$request->stock;
-                if (!empty($product->discount_price))
-                {
-                    $cart->price=$product->discount_price*$cart->stock;
-                }else{
-                    $cart->price=$product->price*$cart->stock;
-                }
-                $cart->save();
-                Alert::info('Product has been added in cart');
-                return redirect()->route('show.cart');
-            }
-            else
-            {
-                $cart=new Cart();
-                $cart->name=$product->title;
-                if (!empty($product->discount_price))
-                {
-                    $cart->price=$product->discount_price*$request->stock;
-                }else{
-                    $cart->price=$product->price*$request->stock;
-                }
-                $cart->stock=$request->stock;
-                $cart->image=$product->image;
-                $cart->product_id=$product->id;
-                $cart->user_id=$user->id;
-                $cart->save();
-                Alert::info('Product has been added in cart');
-                return redirect()->route('show.cart');
-            }
-        }
-        else
+    /**
+     * @param Request $request
+     * @param $id
+     * @param CartService $cartService
+     * @return \Illuminate\Http\RedirectResponse|string
+     */
+    public function cart(Request $request,$id,CartService $cartService){
+        try {
+            return $cartService->cart($request,$id);
+        }catch (\Exception $exception)
         {
-            return redirect()->route('login');
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this cart!';
         }
     }
 
     /**
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|void
+     * @param CartService $cartService
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|string|void
      */
+    public function showCart(CartService $cartService){
 
-    public function showCart(){
-        if(Auth::id()){
-            $id=Auth::user()->id;
-            return view('website.product.cart',['carts'=>Cart::where('user_id','=',$id)->get()]);
+        try {
+            return $cartService->showcart();
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this show cart!';
         }
     }
 
     /**
      * @param Cart $cart
-     * @return \Illuminate\Http\RedirectResponse
+     * @param CartService $cartService
+     * @return \Illuminate\Http\RedirectResponse|string
      */
-    public function removeCart(Cart $cart)
+    public function removeCart(Cart $cart,CartService $cartService)
     {
-        $cart->delete();
-        return redirect()->back();
+        try {
+            return $cartService->deleteCart($cart);
+        }catch (\Exception $exception)
+        {
+            Log::error($exception);
+            return 'Sorry! Something is wrong with this show cart!';
+        }
     }
 
 }
