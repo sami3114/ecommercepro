@@ -7,7 +7,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Favicon -->
     <link href="{{asset('admin').'/img/favicon.ico'}}" rel="icon">
 
@@ -53,12 +53,8 @@
         <!-- Navbar Start -->
         @include('admin.partial.header')
         <!-- Navbar End -->
-        @if(session()->has('message'))
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="fa fa-check me-2"></i>{{session()->get('message')}}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
+        @include('sweetalert::alert')
+
         @yield('content')
 
         <!-- Footer Start -->

@@ -50,6 +50,7 @@
                             <form action="{{ route('delete.category',['category'=>$category->id]) }}" method="POST">
                                 @csrf
                                 @method('DELETE')
+{{--                                <button onclick="confirmation(event)" type="submit" class="btn btn-outline-danger m-2">Delete</button>--}}
                                 <button onclick="return confirm('Are you sure to delete this?')" type="submit" class="btn btn-outline-danger m-2">Delete</button>
                             </form>
                         </td>

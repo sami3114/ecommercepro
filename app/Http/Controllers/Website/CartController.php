@@ -7,6 +7,7 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CartController extends Controller
 {
@@ -28,7 +29,7 @@ class CartController extends Controller
             $cart->product_id=$product->id;
             $cart->user_id=$user->id;
             $cart->save();
-
+            Alert::info('Product has been added in cart');
             return redirect()->route('show.cart');
         }
         else

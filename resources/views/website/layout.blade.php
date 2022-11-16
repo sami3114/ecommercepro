@@ -10,7 +10,7 @@
     <meta name="keywords" content="" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <link rel="shortcut icon" href="images/favicon.png" type="">
+    <link rel="shortcut icon" href="{{asset("images/favicon.png")}}" type="">
     <title>Famms - Fashion HTML Template</title>
     <!-- bootstrap core css -->
     <link rel="stylesheet" type="text/css" href="{{asset('front').'/css/bootstrap.css'}}" />
@@ -133,7 +133,8 @@
 </head>
 <body>
 <div class="hero_area">
-    <!-- header section strats -->
+    @include('sweetalert::alert')
+<!-- header section strats -->
     @include('website.partials.header')
     <!-- end header section -->
     @if(session()->has('message'))

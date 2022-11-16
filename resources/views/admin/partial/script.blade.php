@@ -20,4 +20,23 @@
             $(this).remove();
         });
     }, 2000);
+
+    // function confirmation(ev){
+    //     ev.preventDefault();
+    //     var urlToRedirect=ev.currentTarget.getAttribute('action');
+    //     console.log(urlToRedirect);
+    //     swal({
+    //         title:"Are you sure to delete this",
+    //         text:"You will not be able to revert this",
+    //         icon:"warning",
+    //         button:true,
+    //         dangerMode:true,
+    //     })
+    //     .then((willDel)=> {
+    //         if (willDel) {
+    //             window.location.href = urlToRedirect;
+    //         }
+    //     }) ;
+    //
+    // }
 </script>

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use PDF;
 use Notification;
 use App\Notifications\SendEmailNotification;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class AdminController extends Controller
 {
@@ -28,6 +29,7 @@ class AdminController extends Controller
         $order=Order::find($id);
         $order->delivery_status="delivered";
         $order->save();
+        Alert::success('Order delivered');
         return redirect()->back();
     }
 
@@ -59,6 +61,7 @@ class AdminController extends Controller
             'lastline'=>$request->lastline,
         ];
         Notification::sendNow($user,new SendEmailNotification($details));
+        Alert::success('Email has been sent successfully');
         return redirect()->back();
     }
 }

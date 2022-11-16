@@ -8,7 +8,7 @@ use App\Http\Traits\UploadImage;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
-
+use RealRashid\SweetAlert\Facades\Alert;
 
 class ProductController extends Controller
 {
@@ -25,7 +25,8 @@ class ProductController extends Controller
         $product=$request->all();
         $product['image']=$this->upload($request,'image','product');
         Product::create($product);
-        return redirect()->route('list.product')->with('message','Product has been added successfully');
+        Alert::success('Product has been added successfully');
+        return redirect()->route('list.product');
     }
 
     public function edit(Product $product){
@@ -42,8 +43,9 @@ class ProductController extends Controller
         else{
             $product->update($data);
         }
-
-        return redirect()->route('list.product')->with('message','Product has been updated successfully');
+        Alert::success('Product has been updated successfully');
+        return redirect()->route('list.product');
+//        return redirect()->route('list.product')->with('message','Product has been updated successfully');
     }
 
     public function changeProductStatus(Request $request,$id,$status=1)
@@ -53,7 +55,8 @@ class ProductController extends Controller
         {
             $product->is_active=$status;
             $product->save();
-            return redirect()->route('list.product')->with('message','Product has been updated successfully');
+            Alert::success('Product status has been updated successfully');
+            return redirect()->route('list.product');
         }
     }
 
